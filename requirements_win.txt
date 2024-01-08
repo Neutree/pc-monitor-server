@@ -1,0 +1,5 @@
+Flask
+pynvml
+wmi
+pythonnet
+

@@ -11,7 +11,7 @@ util = Util()
 @app.route("/", methods=["POST", "GET"])
 def home():
     info = util.all()
-    return Response(json.dumps(info, ensure_ascii=False), mimetype="application/json")
+    return Response(json.dumps(info, ensure_ascii=False, indent = 4), mimetype="application/json")
 
 def main(addr, port):
     app.run(addr, port= port)

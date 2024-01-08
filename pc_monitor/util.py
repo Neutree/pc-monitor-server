@@ -12,9 +12,12 @@ import threading
 #         print("OpenHardwareMonitor not found, please install it first from https://openhardwaremonitor.org/downloads/")
 #         exit(1)
 #     wmi_obj = GetObject("winmgmts:\\\\.\\root\\OpenHardwareMonitor")
+try:
+    pynvml.nvmlInit()
+    gpu_count = pynvml.nvmlDeviceGetCount()
+except Exception:
+    gpu_count = 0
 
-pynvml.nvmlInit()
-gpu_count = pynvml.nvmlDeviceGetCount()
 gpu_handles = []
 for i in range(gpu_count):
     gpu_handles.append(pynvml.nvmlDeviceGetHandleByIndex(i))
@@ -82,6 +85,8 @@ class Util:
         # list all disk devices
         disk_partitions = psutil.disk_partitions()
         for i, partition in enumerate(disk_partitions):
+            if "loop" in partition.device:
+                continue
             info[partition.device] = {
                 "mountpoint": partition.mountpoint,
                 "fstype": partition.fstype,
@@ -127,8 +132,8 @@ class Util:
                         if len(self._net_speed_queue_rx[net]) > 10:
                             self._net_speed_queue_rx[net].pop(0)
                             self._net_speed_queue_tx[net].pop(0)
-                        info[net]["speed_rx"] = sum(self._net_speed_queue_rx[net]) / len(self._net_speed_queue_rx[net])
-                        info[net]["speed_tx"] = sum(self._net_speed_queue_tx[net]) / len(self._net_speed_queue_tx[net])
+                        info[net]["speed_rx"] = int(sum(self._net_speed_queue_rx[net]) / len(self._net_speed_queue_rx[net]))
+                        info[net]["speed_tx"] = int(sum(self._net_speed_queue_tx[net]) / len(self._net_speed_queue_tx[net]))
             self._net_info = info
             time.sleep(1)
 
