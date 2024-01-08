@@ -1,5 +1,6 @@
 from flask import Flask, request, Response
 import json
+import argparse
 try:
     from .util import Util
 except Exception:
@@ -17,7 +18,9 @@ def main(addr, port):
     app.run(addr, port= port)
 
 if __name__ == "__main__":
-    addr = "0.0.0.0"
-    port = 9999
-    main(addr, port)
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--addr", default="0.0.0.0", help="Address to listen on")
+    parser.add_argument("--port", default=9999, help="Port to listen on")
+    args = parser.parse_args()
+    main(args.addr, args.port)
 
