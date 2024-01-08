@@ -17,10 +17,13 @@ def home():
 def main(addr, port):
     app.run(addr, port= port)
 
-if __name__ == "__main__":
+def main_cli():
     parser = argparse.ArgumentParser()
     parser.add_argument("--addr", default="0.0.0.0", help="Address to listen on")
-    parser.add_argument("--port", default=9999, help="Port to listen on")
+    parser.add_argument("-p", "--port", default=9999, help="Port to listen on")
     args = parser.parse_args()
     main(args.addr, args.port)
+
+if __name__ == "__main__":
+    main_cli()
 

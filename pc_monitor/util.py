@@ -100,6 +100,8 @@ class Util:
             info = {}
             net_io_counters = psutil.net_io_counters(pernic=True)
             for i, net in enumerate(net_io_counters):
+                if "lo" in net:
+                    continue
                 info[net] = {
                     "rx": net_io_counters[net].bytes_sent,
                     "tx": net_io_counters[net].bytes_recv,
