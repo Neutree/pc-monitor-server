@@ -48,11 +48,11 @@ class Util:
     def get_cpu_info(self):
         cpu_usage = psutil.cpu_percent()
         info = {
-            "uage": [cpu_usage]
+            "usage": [cpu_usage]
         }
         cpu_per_core_usage = psutil.cpu_percent(percpu=True)
         for i, percentage in enumerate(cpu_per_core_usage):
-            info["uage"].append(percentage)
+            info["usage"].append(percentage)
         return info
 
     def get_temp_info(self):
@@ -100,7 +100,7 @@ class Util:
             info = {}
             net_io_counters = psutil.net_io_counters(pernic=True)
             for i, net in enumerate(net_io_counters):
-                if "lo" in net:
+                if "lo" in net or "veth" in net or "docker" in net or "br-" in net:
                     continue
                 info[net] = {
                     "rx": net_io_counters[net].bytes_sent,
@@ -137,7 +137,7 @@ class Util:
                         info[net]["speed_rx"] = int(sum(self._net_speed_queue_rx[net]) / len(self._net_speed_queue_rx[net]))
                         info[net]["speed_tx"] = int(sum(self._net_speed_queue_tx[net]) / len(self._net_speed_queue_tx[net]))
             self._net_info = info
-            time.sleep(1)
+            time.sleep(0.5)
 
     def get_net_info(self):
         return self._net_info
