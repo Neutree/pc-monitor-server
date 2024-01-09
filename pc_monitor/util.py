@@ -150,7 +150,7 @@ class Util:
             gpu_temp = pynvml.nvmlDeviceGetTemperature(gpu, 0)
             gpu_name = pynvml.nvmlDeviceGetName(gpu)
             info[i] = {
-                "name": gpu_name,
+                "name": gpu_name.decode("utf-8"),
                 "mem_used": gpu_info.used,
                 "mem_total": gpu_info.total,
                 "gpu_util": gpu_util.gpu,
