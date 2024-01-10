@@ -1,5 +1,6 @@
 Flask
 pynvml
+qrcode
 wmi
 pythonnet
 
