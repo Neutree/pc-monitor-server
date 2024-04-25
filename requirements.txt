@@ -1,3 +1,4 @@
 Flask
 pynvml
 qrcode
+netifaces

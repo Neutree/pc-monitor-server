@@ -3,7 +3,8 @@ from setuptools import setup, find_packages
 requirements = [
     "Flask",
     "pynvml",
-    "qrcode"
+    "qrcode",
+    "netifaces"
 ]
 requirements_win = [
     "wmi",

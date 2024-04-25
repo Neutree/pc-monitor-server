@@ -3,4 +3,5 @@ pynvml
 qrcode
 wmi
 pythonnet
+netifaces
 
