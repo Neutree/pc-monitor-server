@@ -30,6 +30,7 @@ class Util:
         self._net_speed_queue_rx = {}
         self._net_speed_queue_tx = {}
         self._net_info = {}
+        self._cpu_info = {}
         t = threading.Thread(target=self._update_net_info)
         t.daemon = True
         t.start()
@@ -46,14 +47,7 @@ class Util:
         return info
 
     def get_cpu_info(self):
-        cpu_usage = psutil.cpu_percent()
-        info = {
-            "usage": [cpu_usage]
-        }
-        cpu_per_core_usage = psutil.cpu_percent(percpu=True)
-        for i, percentage in enumerate(cpu_per_core_usage):
-            info["usage"].append(percentage)
-        return info
+        return self._cpu_info.copy()
 
     def get_temp_info(self):
         info = {
@@ -96,11 +90,18 @@ class Util:
 
     def _update_net_info(self):
         self._net_info = {}
+        black_list = ["lo", "veth", "docker", "br-", "vmware", "vmnet", "本地连接", "local"]
         while True:
             info = {}
             net_io_counters = psutil.net_io_counters(pernic=True)
             for i, net in enumerate(net_io_counters):
-                if "lo" in net or "veth" in net or "docker" in net or "br-" in net:
+                net_lower = net.lower()
+                skip = False
+                for name in black_list:
+                    if name in net_lower:
+                        skip = True
+                        break
+                if skip:
                     continue
                 info[net] = {
                     "rx": net_io_counters[net].bytes_sent,
@@ -137,7 +138,16 @@ class Util:
                         info[net]["speed_rx"] = int(sum(self._net_speed_queue_rx[net]) / len(self._net_speed_queue_rx[net]))
                         info[net]["speed_tx"] = int(sum(self._net_speed_queue_tx[net]) / len(self._net_speed_queue_tx[net]))
             self._net_info = info
-            time.sleep(0.5)
+            # cpu
+            cpu_usage = psutil.cpu_percent(interval=0.4)
+            info = {
+                "usage": [cpu_usage]
+            }
+            cpu_per_core_usage = psutil.cpu_percent(interval=0.4, percpu=True)
+            for i, percentage in enumerate(cpu_per_core_usage):
+                info["usage"].append(percentage)
+            self._cpu_info = info
+            # time.sleep(0.5)
 
     def get_net_info(self):
         return self._net_info

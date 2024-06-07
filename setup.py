@@ -4,7 +4,9 @@ requirements = [
     "Flask",
     "pynvml",
     "qrcode",
-    "netifaces"
+    "netifaces",
+    "pillow",
+    "psutil"
 ]
 requirements_win = [
     "wmi",

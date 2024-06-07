@@ -4,4 +4,6 @@ qrcode
 wmi
 pythonnet
 netifaces
+psutil
+pillow
 
