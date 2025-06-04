@@ -95,7 +95,7 @@ def print_addr_qrcode(port):
         font = ImageFont.truetype("/usr/share/fonts/noto/NotoSansCJK-Regular.ttc", size=14)
 
     for img, content in zip(imgs, contents):
-        result_img.paste(img, (0, y_offset))
+        result_img.paste(img.get_image(), (0, y_offset))
         draw.text((2, y_offset + img.height), content, fill="black", font=font)
         y_offset += img.height + 32
 
