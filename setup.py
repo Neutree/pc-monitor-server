@@ -24,13 +24,17 @@ setup(
     version = __version__,
     author = 'Neucrack',
     license='MIT',
-    url='https://github.com/Neutree/pc-monitor',
+    license_file='licenses/LICENSE',
+    url='https://github.com/Neutree/pc-monitor-server',
     packages = find_packages(),
     install_requires = requirements,
     extras_require={
         ':sys_platform == "win32"': requirements_win,
         ':sys_platform == "linux"': requirements_unix,
         # You can add more platform-specific requirements here
+    },
+    package_data={
+        "": ["README*", "LICENSE"]
     },
     entry_points={
         'console_scripts': [
