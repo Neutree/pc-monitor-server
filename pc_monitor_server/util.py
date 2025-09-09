@@ -3,6 +3,9 @@ import platform
 import time
 import pynvml
 import threading
+import ipaddress
+import socket
+
 # if platform.system() == "Windows":
 #     from win32com.client import GetObject
 #     import wmi
@@ -88,11 +91,33 @@ class Util:
             }
         return info
 
+    def _get_all_ips(self):
+        addrs = psutil.net_if_addrs()
+        result = {}
+        for iface, addr_list in addrs.items():
+            ips = [addr.address for addr in addr_list if addr.family == socket.AF_INET]
+            if ips:
+                result[iface] = ips
+        return result
+
+    # def _is_local_net(self, ip : str) -> bool:
+    #     try:
+    #         print(ip, ipaddress.ip_address(ip).is_private)
+    #         return ipaddress.ip_address(ip).is_private
+    #     except ValueError:
+    #         print(f"IP {ip} not valid")
+    #         return False  # 不是合法 IP
+
     def _update_net_info(self):
         self._net_info = {}
         black_list = ["lo", "veth", "docker", "br-", "vmware", "vmnet", "本地连接", "local"]
+        ips = self._get_all_ips()
+        last_read_ip_time = time.time()
         while True:
             info = {}
+            if time.time() - last_read_ip_time > 5:
+                ips = self._get_all_ips()
+                last_read_ip_time = time.time()
             net_io_counters = psutil.net_io_counters(pernic=True)
             for i, net in enumerate(net_io_counters):
                 net_lower = net.lower()
@@ -101,6 +126,8 @@ class Util:
                     if name in net_lower:
                         skip = True
                         break
+                if net not in ips:
+                    continue
                 if skip:
                     continue
                 info[net] = {
@@ -111,7 +138,8 @@ class Util:
                     "errin": net_io_counters[net].errin,
                     "errout": net_io_counters[net].errout,
                     "dropin": net_io_counters[net].dropin,
-                    "dropout": net_io_counters[net].dropout
+                    "dropout": net_io_counters[net].dropout,
+                    "ip": ips[net]
                 }
                 if net not in self._last_net_rx:
                     self._last_net_rx[net] = net_io_counters[net].bytes_recv
